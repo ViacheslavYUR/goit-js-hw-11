@@ -52,3 +52,6 @@ header{
 	background-color: rgba(124, 238, 255, 0.727);
 	
 }
+.is-hidden.load-more{
+	display: none;
+}

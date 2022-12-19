@@ -25,38 +25,52 @@ let page = 1;
 console.log(searchText);
 
 async function getFetch() {
-  const getsearch = await fetch(
-    `https://pixabay.com/api/?key=${KEY_URL}&q=${searchText}&page=${page}&per_page=40&image_type=photo&orientation=horizontal&safesearch=true`
-  );
-  const responece = await getsearch.json();
-  console.log(responece);
-  return responece;
+  try {
+    const responce = await axios.get(
+      `${BASE_URL}?key=${KEY_URL}&q=${searchText}&page=${page}&per_page=40&image_type=photo&orientation=horizontal&safesearch=true`
+    );
+
+    // console.log(responce);
+    return responce;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 function onInputSearch(e) {
   searchText = e.target.value;
-  console.log(e.target.value);
-  console.log(searchText);
 }
 
 async function LoadMore() {
   page += 1;
-  const data = await getFetch();
+  const { data } = await getFetch();
+  if (data.hits.length === 0) {
+    return Notiflix.Notify.info(
+      "We're sorry, but you've reached the end of search results."
+    );
+  }
   render(data);
 }
 
 async function onSearh(e) {
   e.preventDefault();
+  const { data } = await getFetch();
   page = 1;
   clearRender();
-  const data = await getFetch();
+  if (data.hits.length === 0) {
+    return Notiflix.Notify.warning(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+  }
+  Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+  console.log(data);
   render(data);
-  refs.input.value = '';
-  searchText = '';
+
+  refs.loadMore.classList.remove('is-hidden');
 }
 
 function render({ hits }) {
-  //   console.dir(hits);
+  // console.dir(data);
   const listMarkup = hits
     .map(
       ({
@@ -93,4 +107,5 @@ function render({ hits }) {
 }
 function clearRender() {
   refs.gallery.innerHTML = '';
+  refs.loadMore.classList.add('is-hidden');
 }
