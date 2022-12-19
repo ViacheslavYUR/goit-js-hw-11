@@ -1,8 +1,10 @@
+
+
 header{
 	padding: 20px;
 	background-color: teal;
 }
-
+main{ width: 1400px;}
 
 .search-form{
 	display: flex;

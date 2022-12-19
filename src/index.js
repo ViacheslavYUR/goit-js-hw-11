@@ -1,5 +1,8 @@
 import axios from 'axios';
-import simpleLightbox from 'simplelightbox';
+import SimpleLightbox from 'simplelightbox';
+// Додатковий імпорт стилів
+import 'simplelightbox/dist/simple-lightbox.min.css';
+
 import Notiflix from 'notiflix';
 import _debounce from 'lodash.debounce';
 
@@ -21,6 +24,11 @@ refs.loadMore.addEventListener('click', LoadMore);
 let searchText = '';
 let markUpCards = [];
 let page = 1;
+const ligthbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+  scrollZoom: false,
+});
 
 console.log(searchText);
 
@@ -50,6 +58,7 @@ async function LoadMore() {
     );
   }
   render(data);
+  ligthbox.refresh();
 }
 
 async function onSearh(e) {
@@ -65,6 +74,7 @@ async function onSearh(e) {
   Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
   console.log(data);
   render(data);
+  ligthbox.refresh();
 
   refs.loadMore.classList.remove('is-hidden');
 }
@@ -82,8 +92,8 @@ function render({ hits }) {
         comments,
         downloads,
       }) => {
-        return `<div class="photo-card">
-  <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+        return `<div class="photo-card"><a href="${largeImageURL}" onclick="return false" rel="noreferrer noopener">
+  <img src="${webformatURL}" alt="${tags}" loading="lazy" /></a>
   <div class="info">
     <p class="info-item">
       <b>Likes</b>${likes}
@@ -102,7 +112,6 @@ function render({ hits }) {
       }
     )
     .join('');
-  //   console.dir(listMarkup);
   refs.gallery.insertAdjacentHTML('beforeend', listMarkup);
 }
 function clearRender() {
